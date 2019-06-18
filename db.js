@@ -31,7 +31,8 @@ if(!money)
 }
 
 
-
+//The following method stores an entire HTML file in memory and sends it to the server. This is not considered an efficient method to generate dynammic pages.
+//The efficient method would be to use ejs templates, which is a possibility and may be implemented later.
 var page = "<html><body><h1>Welcome, " + username + " To the Iron Bank</h1>    <h1>Dashboard Actions:</h1>";
 page += "<br>Your balance: $" + money;
 page += "<form action='/dashboard' method='post'>";
