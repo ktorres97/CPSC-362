@@ -33,8 +33,12 @@ if(!money)
 
 //The following method stores an entire HTML file in memory and sends it to the server. This is not considered an efficient method to generate dynammic pages.
 //The efficient method would be to use ejs templates, which is a possibility and may be implemented later.
-var page = "<html><body><h1>Welcome, " + username + " To the Iron Bank</h1>    <h1>Dashboard Actions:</h1>";
+var page = "<html><body><h1>Welcome, " + username + " to the Iron Bank</h1>    <h1>Dashboard Actions:</h1>";
 page += "<br>Your balance: $" + money;
+page += "<br><br>Your interest rate is 3%.";
+page += "<br>In 5 years your account balance will be $" + interestRate(money,5) + ".";
+page += "<br>In 10 years your account balance will be $" + interestRate(money,10) + ".";
+page += "<br>In 15 years your account balance will be $" + interestRate(money,15) + ".<br><br>";
 page += "<form action='/dashboard' method='post'>";
 page += "<input type='radio' name='choice' value='deposit'> <label for='user'>Deposit:</label> <input type='text' id='deposit_value' name='deposit_val' placeholder='Enter value to Deposit' /> <br><br>";
 page += "<input type='radio' name='choice' value='withdraw'>";
@@ -71,12 +75,12 @@ return page;
 
 function buildDB(){
 	fs.writeFileSync("out.txt", "<account><username>" + accounts[0].username + "</username><password>"
-	 + accounts[0].pass + "</password><cash>" + accounts[0].cash + "</cash></account>\n"); 
+	 + accounts[0].pass + "</password><cash>" + accounts[0].cash + "</cash></account>\n");
 	 for (let i = 1; i<accounts.length;i++)
 	 {
 	 	fs.appendFileSync("out.txt", "<account><username>" + accounts[i].username + "</username><password>"
-	 	+ accounts[i].pass + "</password><cash>" + accounts[i].cash + "</cash></account>\n"); 
-	 
+	 	+ accounts[i].pass + "</password><cash>" + accounts[i].cash + "</cash></account>\n");
+
 	 }
 }
 
@@ -152,6 +156,14 @@ function check_pass(val)
 }
 
 
+function interestRate(money, year){
+	var temp = Math.pow(1.03,year);
+	temp = temp * money;
+	var amount = temp.toFixed(2);
+
+	return amount;
+}
+
 
 
 
@@ -199,7 +211,7 @@ function accountVerify(user,pass){
 for (let i = 0; i<accounts.length; i++){
 
 	if (user === accounts[i].username){
-	
+
 		if (pass === accounts[i].pass){
 			return true;
 		}
@@ -223,7 +235,7 @@ app.post("/dashboard", function(req, resp){
 	{
 		let error = 0;
 		let index = userIndex(req.session.username);
-	
+
 		if (req.body.choice === 'deposit')
 		{
 			let result = bleach.sanitize(req.body.deposit_val);
@@ -233,29 +245,29 @@ app.post("/dashboard", function(req, resp){
 		else if (req.body.choice === 'withdraw')
 		{
 			let result = bleach.sanitize(req.body.withdraw_val);
-		
+
 			if (result <= accounts[index].cash)
 			{
 				accounts[index].cash -= result;
 				buildDB();
-				
+
 			}
 			else
 			{
 				error = 1;
 			}
-	
+
 		}
-	
+
 		else if (req.body.choice === 'transfer')
 		{
 			let value = bleach.sanitize(req.body.transfer_val[0]);
 			let target = bleach.sanitize(req.body.transfer_val[1]);
-		
-		
+
+
 			if (value <= accounts[index].cash)
 			{
-			
+
 				if(!accountValid(target))
 				{
 					let x = userIndex(target);
@@ -263,23 +275,23 @@ app.post("/dashboard", function(req, resp){
 					accounts[x].cash = parseAdd(accounts[x].cash,value);
 					buildDB();
 				}
-			
+
 			}
 			else
 			{
 				error = 1;
 			}
-		
+
 			if(accountValid(target))
 			{
 				error = 2;
 			}
 
 		}
-	
+
 		switch(error)
 		{
-			case 0: 
+			case 0:
 				resp.send(generateDash(req.session.username,accounts[index].cash));
 				break;
 			case 1:
@@ -289,7 +301,7 @@ app.post("/dashboard", function(req, resp){
 				resp.send(generateDash(req.session.username,accounts[index].cash, error));
 				break;
 		}
-	
+
 	}
 	else
 	{
@@ -314,7 +326,7 @@ app.post("/login", function(req, resp){
 	if (result){
 	let x = userIndex(user);
 	req.session.username = accounts[x].username;
-	
+
 	resp.send(generateDash(user, accounts[x].cash)); //CHANGE INDEX.HTML TO DASHBOARD
 	}
 	else{
@@ -328,7 +340,7 @@ app.post("/getData", function(req, resp){
 	let user = bleach.sanitize(req.body.user);
 	let pass = bleach.sanitize(req.body.pass);
 	if (accountValid(user,pass) && check_pass(pass)){
-	
+
 
 		console.log("Got user input: " + user);
 		console.log("Got user input: " + pass);
@@ -336,15 +348,15 @@ app.post("/getData", function(req, resp){
 		accounts.push(temp);
 		console.log(accounts);
 		fs.appendFileSync("out.txt", "<account><username>" + temp.username + "</username><password>"
-	 	+ temp.pass + "</password><cash>" + temp.cash + "</cash></account>\n"); 
-		
-		
+	 	+ temp.pass + "</password><cash>" + temp.cash + "</cash></account>\n");
+
+
 		let x = userIndex(user);
 		req.session.username = accounts[x].username;
 		resp.send(generateDash(user, 500));
 		}
-		
-		
+
+
 	else{
 	resp.send("<p>Login failed: Account Exists or weak password (minimum one capital letter and one special character</p><button onclick='goBack()'>Go Back</button>" +
 	"<script>function goBack(){window.history.back();}</script>");
@@ -366,8 +378,8 @@ if (result){
 		parse_list.splice(i, 1);
 		}
 	}
-	
-	
+
+
 	for (let i = 0; i<parse_list.length; ++i){
 		let temp = new createAccount(parseUser(parse_list,i,0), parseUser(parse_list,i,1), parseUser(parse_list,i,2));
 		accounts.push(temp);
@@ -377,8 +389,8 @@ if (result){
 
 
 //	console.log(parseUser(parse_list, 0, 1));
-	
-	
+
+
 }
 else{
 	console.log("Result empty");
