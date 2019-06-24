@@ -1,40 +1,83 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Database Demo</title>
+  <title>Iron Bank Login</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial;
+      background-color: black;
+    }
+    header {
+      background-color: SlateGrey;
+      padding: 10px;
+      text-align: center;
+      color: black;
+      font-size: 240%;
+    }
+    section {
+      background-color: SlateGrey;
+      padding: 0px;
+      color: black;
+    }
+    footer {
+      background-color: SlateGrey;
+      padding: 0px;
+      color: black;
+    }
+    h4 {
+      color: black;
+      font-size: 110%;
+    }
+    h1 {
+      color: black;
+      font-size: 180%;
+    }
+  </style>
 </head>
+
 <body>
-   
-    <h4>Login Here</h4>
+    <header><h4>Welcome to the Iron Bank of Braavos</h4></header>
+    <section>
+    <h1>Login Here</h1>
         <form action="/login" method="post">
             <label for="user1">Username:</label>
             <input type="text" id="user1" name="user1" placeholder="Enter your username" />
 	<br>
-            <label for="pass1">Password:</label>
+            <label for="pass1">Password: </label>
             <input type="password" name= "pass1" id="pass1" placeholder="Enter your password" />
 	<br>
             <input type="submit" value="Submit" />
 
     </form>
-    
-    
-    
 
      <h1>No account? Create one Now!</h1>
     <form action="/getData" method="post">
             <label for="user">Username:</label>
             <input type="text" id="user" name="user" placeholder="Enter your username" />
 	<br>
-            <label for="pass">Password:</label>
+            <label for="pass">Password: </label>
             <input type="password" name= "pass" id="pass" placeholder="Enter your password" />
 	<br>
             <input type="submit" value="Create Account" />
 
     </form>
     <br>
-    
-    
+  </section>
+    <br>
+    <br>
+
+  <footer>
+      <br><br><br><br><br>
+      <br><br><br><br><br>
+      <br><br><br><br><br>
+      <br><br><br><br><br>
+      <br><br><br><br><br>
+      <br><br>
+  </footer>
+
 </body>
 </html>
-
-
