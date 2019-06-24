@@ -21,57 +21,49 @@ app.use(sessions({
 
 var accountStrings = [];
 
-
 function generateDash(username, money, error){
+	if(!money)
+	{
+		let x = userIndex(username);
+		money = accounts[x].cash;
+	}
+	//The following method stores an entire HTML file in memory and sends it to the server. This is not considered an efficient method to generate dynammic pages.
+	//The efficient method would be to use ejs templates, which is a possibility and may be implemented later.
+	var page = "<html><body><header><h1>Welcome, " + username + " to the Iron Bank<h1></header>";
+	page += "<br><h4>Your balance: $" + money + "</h4>";
+	page += "<br>Your interest rate is 3%.<br>";
+	page += "<br>In 5 years your account balance will be $" + interestRate(money,5) + ".";
+	page += "<br>In 10 years your account balance will be $" + interestRate(money,10) + ".";
+	page += "<br>In 15 years your account balance will be $" + interestRate(money,15) + ".<br><br>";
+	page += "<h4>Dashboard Actions:</h4><br>";
+	page += "<form action='/dashboard' method='post'>";
+	page += "<input type='radio' name='choice' value='deposit'> <label for='user'>Deposit:</label> <input type='text' id='deposit_value' name='deposit_val' placeholder='Enter value to Deposit' /> <br><br><br>";
+	page += "<input type='radio' name='choice' value='withdraw'>";
+	page += "<label for='user'>Withdraw:</label>";
+	page += "<input type='text' id='Withdraw_value' name='withdraw_val' placeholder='Enter value to Withdraw' />";
+	page += "<br><br><br>";
+	page += "<input type='radio' name='choice' value='transfer'>";
+	page += "<label for='user'>Transfer:</label>";
+	page += "<input type='text' id='Withdraw_value' name='transfer_val' placeholder='Enter value to Transfer' />";
+	page += "<label for='user'>Send to:</label>";
+	page += "<input type='text' id='Withdraw_value' name='transfer_val' placeholder='Enter Username' />";
+	page += "<br><br><br>";
+	page += "<input type='submit' value='Submit' />    </form>";
+	if (error === 1)
+	{
+		page +="<br>You do not have enough money to do that...";
+	}
+	if (error === 2)
+	{
+		page +="<br>Target Account Invalid...";
+	}
+	page += "<br><form action='/logout' method='post'>";
+	page += "<input type='submit' value='Logout' name='logout' id = 'logout'/></form>";
 
-if(!money)
-{
-	let x = userIndex(username);
-	money = accounts[x].cash;
+	page += "</body>";
+	page += "</html>";
+	return page;
 }
-
-
-//The following method stores an entire HTML file in memory and sends it to the server. This is not considered an efficient method to generate dynammic pages.
-//The efficient method would be to use ejs templates, which is a possibility and may be implemented later.
-var page = "<html><body><h1>Welcome, " + username + " to the Iron Bank</h1>    <h1>Dashboard Actions:</h1>";
-page += "<br>Your balance: $" + money;
-page += "<br><br>Your interest rate is 3%.";
-page += "<br>In 5 years your account balance will be $" + interestRate(money,5) + ".";
-page += "<br>In 10 years your account balance will be $" + interestRate(money,10) + ".";
-page += "<br>In 15 years your account balance will be $" + interestRate(money,15) + ".<br><br>";
-page += "<form action='/dashboard' method='post'>";
-page += "<input type='radio' name='choice' value='deposit'> <label for='user'>Deposit:</label> <input type='text' id='deposit_value' name='deposit_val' placeholder='Enter value to Deposit' /> <br><br>";
-page += "<input type='radio' name='choice' value='withdraw'>";
-page += "<label for='user'>Withdraw:</label>";
-page += "<input type='text' id='Withdraw_value' name='withdraw_val' placeholder='Enter value to Withdraw' />";
-page += "<br><br>";
-page += "<input type='radio' name='choice' value='transfer'>";
-page += "<label for='user'>Transfer:</label>";
-page += "<input type='text' id='Withdraw_value' name='transfer_val' placeholder='Enter value to Transfer' />";
-page += "<label for='user'>Send to:</label>";
-page += "<input type='text' id='Withdraw_value' name='transfer_val' placeholder='Enter Username' />";
-page += "<br><br>";
-page += "<input type='submit' value='Submit' />    </form>";
-if (error === 1)
-{
-	page +="<br>You do not have enough money to do that...";
-}
-if (error === 2)
-{
-	page +="<br>Target Account Invalid...";
-}
-page += "<form action='/logout' method='post'>";
-page += "<input type='submit' value='Logout' name='logout' id = 'logout'/></form>";
-
-
-page += "</body>";
-page += "</html>";
-return page;
-
-
-}
-
-
 
 function buildDB(){
 	fs.writeFileSync("out.txt", "<account><username>" + accounts[0].username + "</username><password>"
@@ -80,44 +72,30 @@ function buildDB(){
 	 {
 	 	fs.appendFileSync("out.txt", "<account><username>" + accounts[i].username + "</username><password>"
 	 	+ accounts[i].pass + "</password><cash>" + accounts[i].cash + "</cash></account>\n");
-
 	 }
 }
 
-
 function parseAdd(val1, val2){
-
-var a = parseInt(val1, 10);
-var b = parseInt(val2, 10);
-
-
-return a + b;
+	var a = parseInt(val1, 10);
+	var b = parseInt(val2, 10);
+	return a + b;
 }
-
-
 
 //END OF GLOBALS
-
 function parseUser(list, index, reg){
-
-let final = list[index].match(REGEX[reg]).map(function(val){
-	return val.replace(REPLACE, '');
-});
-return final[0];
+	let final = list[index].match(REGEX[reg]).map(function(val){
+		return val.replace(REPLACE, '');
+	});
+	return final[0];
 }
+
 //Takes the data from the out.txt file and removes XML tags.
-
-
 function userIndex(user){
-for (let i = 0; i<accounts.length;++i){
-	if (user === accounts[i].username)
-		return i;
-	}
-
+	for (let i = 0; i<accounts.length;++i){
+		if (user === accounts[i].username)
+			return i;
+		}
 }
-
-
-
 
 function check_pass(val)
 {
@@ -128,23 +106,19 @@ function check_pass(val)
         if(val.length<=6){
             no=1;
         }
-
         // If the password length is greater than 6 and contain any lowercase alphabet or any number or any special character
         if(val.length>6 && (val.match(/[a-z]/) || val.match(/\d+/) || val.match(/.[!,@,#,$,%,^,&,*,?,_,~,-,(,)]/))){
             no=2;
         }
-
         // If the password length is greater than 6 and contain alphabet,number,special character respectively
         if(val.length>6 && ((val.match(/[a-z]/) && val.match(/\d+/)) || (val.match(/\d+/) && val.match(/.[!,@,#,$,%,^,&,*,?,_,~,-,(,)]/)) || (val.match(/[a-z]/) && val.match(/.[!,@,#,$,%,^,&,*,?,_,~,-,(,)]/)))){
             no=3;
         }
-
         // If the password length is greater than 6 and must contain alphabets,numbers and special characters
         if(val.length>6 && val.match(/[a-z]/) && val.match(/\d+/) && val.match(/.[!,@,#,$,%,^,&,*,?,_,~,-,(,)]/)){
             no=4;
         }
     }
-
     if (no === 3 || no === 4){
         //console.log("is strong");
         return true;
@@ -155,26 +129,17 @@ function check_pass(val)
     }
 }
 
-
 function interestRate(money, year){
 	var temp = Math.pow(1.03,year);
 	temp = temp * money;
 	var amount = temp.toFixed(2);
-
 	return amount;
 }
 
-
-
-
-
-
-
 function escape(input){
-let final = input.replace(REPLACE, '');
-console.log("Escape results: " + final);
-return final;
-
+	let final = input.replace(REPLACE, '');
+	console.log("Escape results: " + final);
+	return final;
 }
 
 function createAccount(username, pass, cash){
@@ -182,47 +147,29 @@ function createAccount(username, pass, cash){
 	this.pass = pass;
 	this.cash = cash;
 }
+
 //Creates an instance of an account object
-
-
 function accountValid(user){
-
-
-for (let i = 0; i<accounts.length;i++){
-	console.log(user + accounts[i]);
-	if (user === accounts[i].username){
-		return false;
+	for (let i = 0; i<accounts.length;i++){
+		console.log(user + accounts[i]);
+		if (user === accounts[i].username){
+			return false;
+			}
 		}
-	}
-
-return true;
+		return true;
 }
+
 //RETURNS FALSE ON ACCOUNT MATCH, TRUE ON NO MATCH
-
-
-
-
-
-
-
 function accountVerify(user,pass){
-
-
-for (let i = 0; i<accounts.length; i++){
-
-	if (user === accounts[i].username){
-
-		if (pass === accounts[i].pass){
-			return true;
+	for (let i = 0; i<accounts.length; i++){
+		if (user === accounts[i].username){
+			if (pass === accounts[i].pass){
+				return true;
 		}
 	}
 }
 return false;
-
 }
-
-
-
 
 app.get("/", function(req,res){
 
@@ -250,13 +197,11 @@ app.post("/dashboard", function(req, resp){
 			{
 				accounts[index].cash -= result;
 				buildDB();
-
 			}
 			else
 			{
 				error = 1;
 			}
-
 		}
 
 		else if (req.body.choice === 'transfer')
@@ -264,10 +209,8 @@ app.post("/dashboard", function(req, resp){
 			let value = bleach.sanitize(req.body.transfer_val[0]);
 			let target = bleach.sanitize(req.body.transfer_val[1]);
 
-
 			if (value <= accounts[index].cash)
 			{
-
 				if(!accountValid(target))
 				{
 					let x = userIndex(target);
@@ -275,7 +218,6 @@ app.post("/dashboard", function(req, resp){
 					accounts[x].cash = parseAdd(accounts[x].cash,value);
 					buildDB();
 				}
-
 			}
 			else
 			{
@@ -286,7 +228,6 @@ app.post("/dashboard", function(req, resp){
 			{
 				error = 2;
 			}
-
 		}
 
 		switch(error)
@@ -301,7 +242,6 @@ app.post("/dashboard", function(req, resp){
 				resp.send(generateDash(req.session.username,accounts[index].cash, error));
 				break;
 		}
-
 	}
 	else
 	{
@@ -309,13 +249,10 @@ app.post("/dashboard", function(req, resp){
 	}
 });
 
-
 app.post("/logout", function(req, resp){
 	req.session.reset();
 	resp.redirect('/');
-
 });
-
 
 app.post("/login", function(req, resp){
 	console.log("login function");
@@ -333,14 +270,12 @@ app.post("/login", function(req, resp){
 	resp.send("<p>Login failed: Incorrect Username/Password</p><button onclick='goBack()'>Go Back</button>" +
 	"<script>function goBack(){window.history.back();}</script>");
 	}
-
 });
 
 app.post("/getData", function(req, resp){
 	let user = bleach.sanitize(req.body.user);
 	let pass = bleach.sanitize(req.body.pass);
 	if (accountValid(user,pass) && check_pass(pass)){
-
 
 		console.log("Got user input: " + user);
 		console.log("Got user input: " + pass);
@@ -350,28 +285,20 @@ app.post("/getData", function(req, resp){
 		fs.appendFileSync("out.txt", "<account><username>" + temp.username + "</username><password>"
 	 	+ temp.pass + "</password><cash>" + temp.cash + "</cash></account>\n");
 
-
 		let x = userIndex(user);
 		req.session.username = accounts[x].username;
 		resp.send(generateDash(user, 500));
 		}
 
-
 	else{
 	resp.send("<p>Login failed: Account Exists or weak password (minimum one capital letter and one special character</p><button onclick='goBack()'>Go Back</button>" +
 	"<script>function goBack(){window.history.back();}</script>");
-}
-
-
-
+	}
 });
-
 
 let result = fs.readFileSync("out.txt", 'utf8');
 if (result){
 	var parse_list = result.split("\n");
-
-
 
 	for (let i = 0; i<parse_list.length; ++i){
 		if (parse_list[i] === ""){
@@ -379,24 +306,15 @@ if (result){
 		}
 	}
 
-
 	for (let i = 0; i<parse_list.length; ++i){
 		let temp = new createAccount(parseUser(parse_list,i,0), parseUser(parse_list,i,1), parseUser(parse_list,i,2));
 		accounts.push(temp);
 	}
 	console.log(accounts);
 
-
-
-//	console.log(parseUser(parse_list, 0, 1));
-
-
 }
 else{
 	console.log("Result empty");
 }
 
-//for (let i = 0; i<parse_list.length(); i++){
-
 app.listen(3000);
-//	console.log(parseUser(parse_list,0,0));
