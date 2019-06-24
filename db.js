@@ -29,13 +29,18 @@ function generateDash(username, money, error){
 	}
 	//The following method stores an entire HTML file in memory and sends it to the server. This is not considered an efficient method to generate dynammic pages.
 	//The efficient method would be to use ejs templates, which is a possibility and may be implemented later.
-	var page = "<html><body><header><h1>Welcome, " + username + " to the Iron Bank<h1></header>";
-	page += "<br><h4>Your balance: $" + money + "</h4>";
+	var page = "<html>";
+	page += "<style> * { box-sizing: border-box; } body { font-family: Arial; background-color: black; }"
+	page += " section { background-color: SlateGrey; padding: 15px;text-align: center;color: black;font-size: 200%; }"
+	page += " footer { background-color: SlateGrey; padding: 0px; color: black;font-size: 120%; }"
+	page += " </style>"
+	page += "<body><header><section><h1>Welcome, " + username + " to the Iron Bank<h1></section></header>";
+	page += "<br><footer><br><h4>Your balance: $" + money + ".</h4>";
 	page += "<br>Your interest rate is 3%.<br>";
 	page += "<br>In 5 years your account balance will be $" + interestRate(money,5) + ".";
 	page += "<br>In 10 years your account balance will be $" + interestRate(money,10) + ".";
-	page += "<br>In 15 years your account balance will be $" + interestRate(money,15) + ".<br><br>";
-	page += "<h4>Dashboard Actions:</h4><br>";
+	page += "<br>In 15 years your account balance will be $" + interestRate(money,15) + ".<br><br></footer><br>";
+	page += "<footer><br><h4>Dashboard Actions:</h4><br>";
 	page += "<form action='/dashboard' method='post'>";
 	page += "<input type='radio' name='choice' value='deposit'> <label for='user'>Deposit:</label> <input type='text' id='deposit_value' name='deposit_val' placeholder='Enter value to Deposit' /> <br><br><br>";
 	page += "<input type='radio' name='choice' value='withdraw'>";
@@ -60,7 +65,7 @@ function generateDash(username, money, error){
 	page += "<br><form action='/logout' method='post'>";
 	page += "<input type='submit' value='Logout' name='logout' id = 'logout'/></form>";
 
-	page += "</body>";
+	page += "<br></footer></body>";
 	page += "</html>";
 	return page;
 }
