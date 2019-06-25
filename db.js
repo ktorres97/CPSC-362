@@ -42,14 +42,14 @@ function generateDash(username, money, error){
 	page += "<br>In 15 years your account balance will be $" + interestRate(money,15) + ".<br><br></footer><br>";
 	page += "<footer><br><h4>Dashboard Actions:</h4><br>";
 	page += "<form action='/dashboard' method='post'>";
-	page += "<input type='radio' name='choice' value='deposit'> <label for='user'>Deposit:</label> <input type='text' id='deposit_value' name='deposit_val' placeholder='Enter value to Deposit' /> <br><br><br>";
+	page += "<input type='radio' name='choice' value='deposit'> <label for='user'>Deposit:</label> <input type='number' min='0' id='deposit_value' name='deposit_val' placeholder='Enter value to Deposit' /> <br><br><br>";
 	page += "<input type='radio' name='choice' value='withdraw'>";
 	page += "<label for='user'>Withdraw:</label>";
-	page += "<input type='text' id='Withdraw_value' name='withdraw_val' placeholder='Enter value to Withdraw' />";
+	page += "<input type='number' min='0' id='Withdraw_value' name='withdraw_val' placeholder='Enter value to Withdraw' />";
 	page += "<br><br><br>";
 	page += "<input type='radio' name='choice' value='transfer'>";
 	page += "<label for='user'>Transfer:</label>";
-	page += "<input type='text' id='Withdraw_value' name='transfer_val' placeholder='Enter value to Transfer' />";
+	page += "<input type='number' min='0' id='Withdraw_value' name='transfer_val' placeholder='Enter value to Transfer' />";
 	page += "<label for='user'>Send to:</label>";
 	page += "<input type='text' id='Withdraw_value' name='transfer_val' placeholder='Enter Username' />";
 	page += "<br><br><br>";
@@ -62,6 +62,12 @@ function generateDash(username, money, error){
 	{
 		page +="<br>Target Account Invalid...";
 	}
+	
+	
+	page += "<br><form action='/getsurvey' method='post'>";
+	page += "<input type='submit' value='Survey' name='Survey' id = 'Survey'/></form>";
+	
+	
 	page += "<br><form action='/logout' method='post'>";
 	page += "<input type='submit' value='Logout' name='logout' id = 'logout'/></form>";
 
@@ -175,6 +181,27 @@ function accountVerify(user,pass){
 }
 return false;
 }
+
+app.post("/survey", function(req,resp){
+
+
+	console.log(req.session.username);
+	fs.appendFileSync("results.txt", "User " + req.session.username + " survey results:\n"
+	 	+ "Enjoyment: " + req.body.choice + "\n" + "Will recommend: " + req.body.choice1 + "\n" + "Design 1/5: " + req.body.choice2 + "\n" + "\n");
+
+	console.log(req.body.choice);
+	console.log(req.body.choice1);
+	console.log(req.body.choice2);
+	
+	let index = userIndex(req.session.username);
+	resp.send(generateDash(req.session.username,accounts[index].cash));
+	});
+
+app.post("/getsurvey", function(req,res){
+
+	res.sendFile(__dirname + "/survey.html");
+	});
+
 
 app.get("/", function(req,res){
 
